@@ -1,3 +1,6 @@
 pandas
 openpyxl
 numpy
+streamlit
+seaborn
+plotly

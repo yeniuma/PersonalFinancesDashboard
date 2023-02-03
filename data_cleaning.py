@@ -41,8 +41,10 @@ frame['ID'] = frame['Tranzakció dátuma'] + frame['Partner neve'] + frame['Szá
 
 frame.drop_duplicates(subset = "ID")
 
+frame.drop(columns=frame.columns[-1], inplace=True)
+
 print(frame)
 
-frame.to_excel(os.path.join(compiled_excel_files, "clean_df.xlsx"))
+frame.to_excel(os.path.join(compiled_excel_files, "clean_df.xlsx"), index=False)
 
 write_processsed_excels_name(processed_excels_path, processed_excels)
