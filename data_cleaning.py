@@ -75,12 +75,25 @@ def calculate_savings_and_spendings(df, start_date, end_date):
 
     koltsegek = df[(df['Könyvelés dátuma']>=start_date) & (df['Könyvelés dátuma']<=end_date)] 
 
-    koltsegek = koltsegek.groupby(["Bejövő/Kimenő", df['Tranzakció dátuma'].dt.year.rename('Év'), df['Tranzakció dátuma'].dt.month_name().rename('Hónap')])["Összeg"].sum().reset_index()
-    koltsegek = pd.pivot_table(koltsegek, values = "Összeg", columns= "Bejövő/Kimenő", index = ["Év", "Hónap"]).reset_index()
-    koltsegek["Bejövő"] = koltsegek.get('Bejövő', 0)  
-    koltsegek["Kimenő"] = koltsegek.get('Kimenő', 0)  
+    koltsegek = koltsegek.groupby(["Bejövő/Kimenő"])["Összeg"].sum().reset_index()
+    koltsegek = pd.pivot_table(koltsegek, values = "Összeg", columns= "Bejövő/Kimenő").reset_index()
+    koltsegek["Bejövő"], koltsegek["Kimenő"] = koltsegek.get('Bejövő', 0), koltsegek.get('Kimenő', 0) 
+    koltsegek["Kimenő"] = koltsegek["Kimenő"]*-1
     koltsegek.loc[:, "Bejövő"], koltsegek.loc[:, "Kimenő"] = koltsegek["Bejövő"].map('{:,d}'.format), koltsegek["Kimenő"].map('{:,d}'.format)
 
+    return koltsegek
+
+def calculate_spendings_by_categories(df, start_date, end_date):
+    df['Tranzakció dátuma'] = pd.to_datetime(df['Tranzakció dátuma'], errors='coerce')
+    df['Könyvelés dátuma'] = pd.to_datetime(df['Tranzakció dátuma']).dt.date
+
+    koltsegek = df[(df['Könyvelés dátuma']>=start_date) & (df['Könyvelés dátuma']<=end_date) & (df['Bejövő/Kimenő'] == "Kimenő")] 
+    
+    #kategoriak = koltsegek["Költési kategória"].unique().tolist()
+
+    koltsegek = koltsegek.groupby(["Költési kategória",df['Tranzakció dátuma'].dt.year.rename('YEAR'), df['Tranzakció dátuma'].dt.month.rename('MONTH')])["Összeg"].sum().reset_index()
+    koltsegek["Összeg"] = koltsegek["Összeg"]*-1 
+    koltsegek["Dátum"] = pd.to_datetime(koltsegek[['YEAR', 'MONTH']].assign(DAY=1))
     return koltsegek
 
 def filter_df_by_date_range(df, start_date, end_date):
