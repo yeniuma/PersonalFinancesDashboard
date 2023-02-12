@@ -4,7 +4,7 @@ Python used for this program: 3.11.0
 
 To install required packages run:
 ```
-pip install -r -y requirements.txt
+pip install -r requirements.txt
 ```
 
 To start continous deployment process in the background:
