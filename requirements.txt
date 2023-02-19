@@ -6,3 +6,4 @@ seaborn
 plotly
 flask
 streamlit-nested-layout
+streamlit-authenticator

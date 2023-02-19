@@ -1,0 +1,11 @@
+credentials:
+  usernames:
+    finance:
+      email: jsmith@gmail.com
+      name: John Smith
+      password: $2b$12$VCWwISLkUxcx5oI8h7Z5PuSp72npC4P7x7P3h0cF9xouXlRXMpMmK
+
+cookie:
+  expiry_days: 0
+  key: $2b$12$vJzcCgFAf/mVA4ndJqLnLuxroaP4AdQFiVS/yce3feGU74DoLE19y
+  name: random_cookie_name
