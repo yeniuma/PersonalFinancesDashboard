@@ -10,7 +10,7 @@ st.set_page_config(page_title= "Finance dashboard", page_icon = "🦈",layout = 
 
 df = dc.get_clean_data()
 
-if df.empty():
+if df.empty:
 
     fuploader3 = st.columns(2)
     with fuploader3:
