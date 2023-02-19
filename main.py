@@ -12,9 +12,7 @@ df = dc.get_clean_data()
 
 if df.empty:
 
-    fuploader3 = st.columns(2)
-    with fuploader3:
-        uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type = "xlsx")
+    uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type = "xlsx")
     if uploaded_file is not None:
        uploaded_df = pd.read_excel(uploaded_file)
        uploaded_df.to_excel(f"../DataForFinanceDashboard/raw/{uploaded_file.name}")
