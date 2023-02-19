@@ -134,9 +134,10 @@ def filter_dataframe_for_visualizations(df: pd.DataFrame) -> pd.DataFrame:
             df[col] = df[col].dt.tz_localize(None)
 
     modification_container = st.container()
+    
 
     with modification_container:
-        print(df.columns)
+        
         to_filter_columns = st.multiselect("Szűrőfeltételek:", df.drop(columns = "Tranzakció dátuma").columns)
         for column in to_filter_columns:
             left, right = st.columns((1, 20))
