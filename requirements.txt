@@ -5,5 +5,4 @@ streamlit
 seaborn
 plotly
 flask
-streamlit_nested_layout
-PIL
+streamlit-nested-layout
