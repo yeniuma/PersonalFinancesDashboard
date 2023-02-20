@@ -6,7 +6,7 @@ import datetime
 import streamlit_nested_layout
 from auth import get_authenticator, get_authentication_status
 import streamlit_authenticator as stauth
-
+from storage import upload_raw_df_as_excel
 
 
 st.set_page_config(page_title= "Finance dashboard", page_icon = "🦈",layout = "wide")
@@ -22,7 +22,7 @@ if get_authentication_status(authenticator):
         uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type = "xlsx")
         if uploaded_file is not None:
             uploaded_df = pd.read_excel(uploaded_file)
-            uploaded_df.to_excel(f"../DataForFinanceDashboard/raw/{uploaded_file.name}")
+            upload_raw_df_as_excel(df=uploaded_df, df_name=uploaded_file.name)
     else:
 
         filterchooser,fuploader3 = st.columns([2,1])
@@ -33,7 +33,7 @@ if get_authentication_status(authenticator):
             uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type = "xlsx")
             if uploaded_file is not None:
                 uploaded_df = pd.read_excel(uploaded_file)
-                uploaded_df.to_excel(f"../DataForFinanceDashboard/raw/{uploaded_file.name}")
+                upload_raw_df_as_excel(df=uploaded_df, df_name=uploaded_file.name)
 
         income_and_spendings = dc.calculate_savings_and_spendings(filtered_df)
         categories_income_and_spendings_with_date = dc.calculate_spendings_by_categories(filtered_df)
