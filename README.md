@@ -9,5 +9,5 @@ pip install -r requirements.txt
 
 To deploy app:
 ```
-gcloud deploy app
+gcloud app deploy
 ```
