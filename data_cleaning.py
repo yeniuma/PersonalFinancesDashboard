@@ -45,11 +45,10 @@ def setup_data_directories():
         with open("processed_excels.txt", mode = "w"):
             pass
 
-def clean_data():
-    setup_data_directories()
+def clean_from_raw_data():
 
     path = "..\DataForFinanceDashboard"
-    raw_excel_files = glob.glob(os.path.join(path, "raw\*.xlsx"))
+    raw_excel_files = glob.glob(os.path.join(path, "raw/*.xlsx"))
     processed_excels_path = os.path.join(path, "processed_excels.txt")
     compiled_excel_files= os.path.join(path, "clean")
 
@@ -68,7 +67,7 @@ def clean_data():
 
     write_processsed_excels_name(processed_excels_path, processed_excels)
 
-def get_clean_data():
+def get_data():
     try:
         path = "..\DataForFinanceDashboard\clean\clean_df.xlsx"
         df = pd.read_excel(path)
