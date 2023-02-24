@@ -7,4 +7,3 @@ plotly
 flask
 streamlit-nested-layout
 streamlit-authenticator
-google-cloud-storage
