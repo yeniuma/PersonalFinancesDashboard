@@ -6,8 +6,3 @@ To install required packages run:
 ```
 pip install -r requirements.txt
 ```
-
-To deploy app:
-```
-gcloud app deploy
-```
