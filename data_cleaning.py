@@ -10,16 +10,6 @@ from pandas.api.types import (
     is_object_dtype,
 )
 import streamlit as st
-from storage import( 
-    CLEAN_DATA_FOLDER, 
-    RAW_DATA_FOLDER, 
-    get_excel_as_bytes, 
-    get_processed_excel_bookkeper_file_path, 
-    get_raw_excel_files, 
-    upload_clean_df_as_excel
-)
-from google.cloud.exceptions import NotFound
-
 
 def read_list_of_already_processed_excels(path):
     if os.path.exists(path):
@@ -27,54 +17,63 @@ def read_list_of_already_processed_excels(path):
             t_list = f.read().splitlines()
     else:
         t_list = []
-    return t_list    
-
+    return t_list     
 
 def write_processsed_excels_name(path, processed_excels_list):
     with open(path, 'w') as f:
         for item in processed_excels_list:
             f.write("%s\n" % item)
 
-
 def read_excels_if_not_already_processed(raw_excels, processed_excels_list):
-    dfs = []
+    df = []
     for f in raw_excels:
         if f in processed_excels_list:
             continue
         processed_excels_list.append(f)
-        print(f"THIS IS THE F: {f}")
-        temp = pd.read_excel(get_excel_as_bytes(folder=RAW_DATA_FOLDER,file_name=f))
-        dfs.append(temp)
+        temp = pd.read_excel(f, index_col=None, header=0)
+        df.append(temp)
+    dframe = pd.concat(df, axis=0, ignore_index=True)
+    return dframe
 
-    df = pd.concat(dfs, axis=0, ignore_index=True) if len(dfs) else pd.DataFrame()
-    return df
+def setup_data_directories():
+    folders = ["DataForFinanceDashboard","DataForFinanceDashboard/raw","DataForFinanceDashboard/clean"]
+    for f in folders:
+        if not os.path.exists(f"../{f}"):
+            os.mkdir(f"../{f}")
 
+    if not os.path.exists("DataForFinanceDashboard/processed_excels.txt"):
+        with open("processed_excels.txt", mode = "w"):
+            pass
 
 def clean_from_raw_data():
-    raw_excel_files = get_raw_excel_files()
-    processed_excels_bookkeeper_path = get_processed_excel_bookkeper_file_path()
-    processed_excels = read_list_of_already_processed_excels(processed_excels_bookkeeper_path)
+
+    path = "..\DataForFinanceDashboard"
+    raw_excel_files = glob.glob(os.path.join(path, "raw/*.xlsx"))
+    processed_excels_path = os.path.join(path, "processed_excels.txt")
+    compiled_excel_files= os.path.join(path, "clean")
+
+    processed_excels = read_list_of_already_processed_excels(processed_excels_path)
 
     frame = read_excels_if_not_already_processed(raw_excel_files, processed_excels)
-    if frame.empty:
-        return
 
     frame['Számla tulajdonos'] = np.where(frame['Számla szám'] == 1177337702327033, 'Adrienn', 'Botond')
     frame['ID'] = frame['Tranzakció dátuma'] + frame['Partner neve'] + frame['Számla szám'].apply(str) + frame['Összeg'].apply(str)
+
     frame.drop_duplicates(subset = "ID")
+
     frame.drop(columns=["ID", "Számla név", "Számla szám", "Partner számlaszáma/azonosítója"], inplace=True)
 
-    upload_clean_df_as_excel(df=frame, df_name=f"clean_df{datetime.now()}.xlsx")
-    write_processsed_excels_name(processed_excels_bookkeeper_path, processed_excels)
+    frame.to_excel(os.path.join(compiled_excel_files, f"clean_df{datetime.now()}.xlsx"), index=False)
 
+    write_processsed_excels_name(processed_excels_path, processed_excels)
 
 def get_data():
     try:
-        df = pd.read_excel(get_excel_as_bytes(folder=CLEAN_DATA_FOLDER, file_name="clean_df.xlsx"))
-    except NotFound:
-        df = pd.DataFrame()
+        path = "..\DataForFinanceDashboard\clean\clean_df.xlsx"
+        df = pd.read_excel(path)
+    except FileNotFoundError:
+        return pd.DataFrame()
     return df
-
 
 def calculate_savings_and_spendings(df):
     df['Tranzakció dátuma'] = pd.to_datetime(df['Tranzakció dátuma'], errors='coerce')
@@ -90,7 +89,6 @@ def calculate_savings_and_spendings(df):
 
     return koltsegek
 
-
 def calculate_spendings_by_categories(df):
     df['Tranzakció dátuma'] = pd.to_datetime(df['Tranzakció dátuma'], errors='coerce')
     df['Könyvelés dátuma'] = pd.to_datetime(df['Tranzakció dátuma']).dt.date
@@ -102,7 +100,6 @@ def calculate_spendings_by_categories(df):
     df["Dátum"] = pd.to_datetime(df[['YEAR', 'MONTH']].assign(DAY=1))
     return df
 
-
 def filter_df_by_date_range(df, start_date, end_date):
     df['Könyvelés dátuma'] = pd.to_datetime(df['Tranzakció dátuma']).dt.date
     filtered_df = df[(df['Könyvelés dátuma']>=start_date) & (df['Könyvelés dátuma']<=end_date)]
@@ -110,7 +107,6 @@ def filter_df_by_date_range(df, start_date, end_date):
     filtered_df['Tranzakció dátuma'] = filtered_df['Tranzakció dátuma'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
 
     return filtered_df
-
 
 def filter_dataframe_for_visualizations(df: pd.DataFrame) -> pd.DataFrame:
     """
