@@ -11,6 +11,7 @@ from pandas.api.types import (
 )
 import streamlit as st
 
+
 def read_list_of_already_processed_excels(path):
     if os.path.exists(path):
         with open(path) as f:
@@ -25,6 +26,9 @@ def write_processsed_excels_name(path, processed_excels_list):
             f.write("%s\n" % item)
 
 def read_excels_if_not_already_processed(raw_excels, processed_excels_list):
+    if len(raw_excels) == 0:
+        return None
+    
     df = []
     for f in raw_excels:
         if f in processed_excels_list:
@@ -35,19 +39,10 @@ def read_excels_if_not_already_processed(raw_excels, processed_excels_list):
     dframe = pd.concat(df, axis=0, ignore_index=True)
     return dframe
 
-def setup_data_directories():
-    folders = ["DataForFinanceDashboard","DataForFinanceDashboard/raw","DataForFinanceDashboard/clean"]
-    for f in folders:
-        if not os.path.exists(f"../{f}"):
-            os.mkdir(f"../{f}")
-
-    if not os.path.exists("DataForFinanceDashboard/processed_excels.txt"):
-        with open("processed_excels.txt", mode = "w"):
-            pass
 
 def clean_from_raw_data():
 
-    path = "..\DataForFinanceDashboard"
+    path = "DataForFinanceDashboard"
     raw_excel_files = glob.glob(os.path.join(path, "raw/*.xlsx"))
     processed_excels_path = os.path.join(path, "processed_excels.txt")
     compiled_excel_files= os.path.join(path, "clean")
@@ -55,8 +50,11 @@ def clean_from_raw_data():
     processed_excels = read_list_of_already_processed_excels(processed_excels_path)
 
     frame = read_excels_if_not_already_processed(raw_excel_files, processed_excels)
+    if frame is None:
+        return
 
     frame['Számla tulajdonos'] = np.where(frame['Számla szám'] == 1177337702327033, 'Adrienn', 'Botond')
+    
     frame['ID'] = frame['Tranzakció dátuma'] + frame['Partner neve'] + frame['Számla szám'].apply(str) + frame['Összeg'].apply(str)
 
     frame.drop_duplicates(subset = "ID")
@@ -69,7 +67,7 @@ def clean_from_raw_data():
 
 def get_data():
     try:
-        path = "..\DataForFinanceDashboard\clean\clean_df.xlsx"
+        path = "DataForFinanceDashboard\clean\clean_df.xlsx"
         df = pd.read_excel(path)
     except FileNotFoundError:
         return pd.DataFrame()

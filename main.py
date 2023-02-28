@@ -22,7 +22,7 @@ if get_authentication_status(authenticator):
         uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type = "xlsx")
         if uploaded_file is not None:
             uploaded_df = pd.read_excel(uploaded_file)
-            uploaded_df.to_excel(f"../DataForFinanceDashboard/raw/{uploaded_file.name}")
+            uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}")
     else:
 
         filterchooser,fuploader3 = st.columns([2,1])
@@ -33,7 +33,7 @@ if get_authentication_status(authenticator):
             uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type = "xlsx")
             if uploaded_file is not None:
                 uploaded_df = pd.read_excel(uploaded_file)
-                uploaded_df.to_excel(f"../DataForFinanceDashboard/raw/{uploaded_file.name}")
+                uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}")
 
         income_and_spendings = dc.calculate_savings_and_spendings(actual_filtered_df)
         categories_income_and_spendings_with_date = dc.calculate_spendings_by_categories(actual_filtered_df)
