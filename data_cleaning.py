@@ -46,7 +46,6 @@ def clean_from_raw_data():
     path = "DataForFinanceDashboard"
     raw_excel_files = glob.glob(os.path.join(path, "raw/*.xlsx"))
     processed_excels_path = os.path.join(path, "processed_excels.txt")
-    compiled_excel_files = os.path.join(path, "clean")
 
     processed_excels = read_list_of_already_processed_excels(processed_excels_path)
 
@@ -71,14 +70,15 @@ def clean_from_raw_data():
             ],
             inplace=True,
         )
-        clean_df_path = os.path.join(path,"clean", "clean_df.xlsx")
-        writer_mode = "a" if os.path.exists(clean_df_path) else "w"
-
-        with pd.ExcelWriter(clean_df_path, mode=writer_mode, engine="openpyxl") as writer:
-            frame.to_excel(writer, index=False)
-
+        _save_excel(df=frame, path=os.path.join(path, "clean", "clean_df.xlsx"))
 
     write_processsed_excels_name(processed_excels_path, processed_excels)
+
+
+def _save_excel(df, path):
+    writer_mode = "a" if os.path.exists(path) else "w"
+    with pd.ExcelWriter(path, mode=writer_mode, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False)
 
 
 def get_data():
