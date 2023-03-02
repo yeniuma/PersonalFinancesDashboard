@@ -7,3 +7,5 @@ plotly
 flask
 streamlit-nested-layout
 streamlit-authenticator
+pytest
+black
