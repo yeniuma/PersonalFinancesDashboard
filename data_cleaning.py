@@ -64,7 +64,6 @@ def clean_from_raw_data():
         frame.drop_duplicates(subset="ID")
         frame.drop(
             columns=[
-                frame.columns[0],
                 "ID",
                 "Számla név",
                 "Számla szám",

@@ -27,11 +27,7 @@ if get_authentication_status(authenticator):
     else:
         filterchooser, fuploader3 = st.columns([2, 1])
         with filterchooser:
-            print("ASDASD")
-            print(df.columns)
             actual_filtered_df = dc.filter_dataframe_for_visualizations(df)
-            print(df.columns)
-            print(actual_filtered_df.columns)
 
         with fuploader3:
             uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type="xlsx")
