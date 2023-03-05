@@ -22,9 +22,10 @@ def read_list_of_already_processed_excels(path):
 
 
 def write_processsed_excels_name(path, processed_excels_list):
-    with open(path, "w") as f:
-        for item in processed_excels_list:
-            f.write("%s\n" % item)
+    if os.path.exists(path):
+        with open(path, "w") as f:
+            for item in processed_excels_list:
+                f.write("%s\n" % item)
 
 
 def get_raw_excels_as_dataframe(excels_to_process, processed_excels):
@@ -63,6 +64,7 @@ def clean_from_raw_data():
         frame.drop_duplicates(subset="ID")
         frame.drop(
             columns=[
+                frame.columns[0],
                 "ID",
                 "Számla név",
                 "Számla szám",

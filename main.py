@@ -6,6 +6,7 @@ import datetime
 import streamlit_nested_layout
 from auth import get_authenticator, get_authentication_status
 import streamlit_authenticator as stauth
+from dateutil.relativedelta import relativedelta
 
 
 st.set_page_config(page_title="Finance dashboard", page_icon="🦈", layout="wide")
@@ -22,7 +23,7 @@ if get_authentication_status(authenticator):
         uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type="xlsx")
         if uploaded_file is not None:
             uploaded_df = pd.read_excel(uploaded_file)
-            uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}")
+            uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}", index=False)
     else:
         filterchooser, fuploader3 = st.columns([2, 1])
         with filterchooser:
@@ -32,7 +33,7 @@ if get_authentication_status(authenticator):
             uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type="xlsx")
             if uploaded_file is not None:
                 uploaded_df = pd.read_excel(uploaded_file)
-                uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}")
+                uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}", index=False)
 
         income_and_spendings = dc.calculate_savings_and_spendings(actual_filtered_df)
         categories_income_and_spendings_with_date = dc.calculate_spendings_by_categories(
@@ -42,12 +43,13 @@ if get_authentication_status(authenticator):
             categories_income_and_spendings_with_date["Költési kategória"] != "Nem kategorizált"
         ]
         categories_income_and_spendings_with_year_month = (
-            categories_income_and_spendings_with_date.drop(columns=["Dátum"])
+            categories_income_and_spendings_with_date
+            .drop(columns=["Dátum"])
         )
-        # past_filtered_df_for_metric_delta = dc.calculate_savings_and_spendings(df,
+        #past_filtered_df_for_metric_delta = dc.calculate_savings_and_spendings(df,
         #    (min(actual_filtered_df['Könyvelés dátuma']) - relativedelta(months=1)), (max(actual_filtered_df['Könyvelés dátuma']) - relativedelta(months=1))
         # )
-        past_spendings = dc.calculate_savings_and_spendings(past_filtered_df_for_metric_delta)
+        #past_spendings = dc.calculate_savings_and_spendings(past_filtered_df_for_metric_delta)
 
         categories_income_and_spendings_with_year_month.rename(
             columns={"YEAR": "Év", "MONTH": "Hónap"}, inplace=True
@@ -78,11 +80,11 @@ if get_authentication_status(authenticator):
             metr2.metric(
                 "Költés",
                 income_and_spendings["Kimenő"][0],
-                delta=(
-                    (income_and_spendings["Kimenő"][0] - past_spendings["Kimenő"][0])
-                    / past_spendings["Kimenő"][0]
-                    * 100
-                ),
+                #delta=(
+                #    (income_and_spendings["Kimenő"][0] - past_spendings["Kimenő"][0])
+                #    / past_spendings["Kimenő"][0]
+                #    * 100
+                #),
                 delta_color="inverse",
                 help=None,
                 label_visibility="visible",
@@ -96,6 +98,6 @@ if get_authentication_status(authenticator):
         categcol, graphcol = st.columns([1, 2])
         with st.container():
             with categcol:
-                st.dataframe(categories_income_and_spendings_with_year_month)
+                st.dataframe(categories_income_and_spendings_with_year_month.style.format(thousands=""))
             with graphcol:
                 st.plotly_chart(fig, theme="streamlit", use_container_width=True)
