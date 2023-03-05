@@ -171,8 +171,12 @@ def filter_dataframe_for_visualizations(df: pd.DataFrame) -> pd.DataFrame:
     modification_container = st.container()
 
     with modification_container:
+        columns = df.columns
+        if "Tranzakció dátuma" in columns:
+            columns.drop("Tranzakció dátuma")
+
         to_filter_columns = st.multiselect(
-            "Szűrőfeltételek:", df.drop(columns="Tranzakció dátuma").columns
+            "Szűrőfeltételek:", columns
         )
         for column in to_filter_columns:
             left, right = st.columns((1, 20))
