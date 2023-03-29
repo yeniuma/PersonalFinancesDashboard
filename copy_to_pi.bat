@@ -4,6 +4,5 @@ scp ^
     main.py ^
     setup.py ^
     auth.yaml ^
-    Dockerfile ^
     requirements.txt ^
-    computah@192.168.1.135:/home/computah/PersonalFinancesDashboard
+    holdmedve@192.168.1.166:/home/holdmedve/PersonalFinancesDashboard
