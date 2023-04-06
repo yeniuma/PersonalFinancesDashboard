@@ -2,11 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import data_cleaning as dc
-import datetime
 import streamlit_nested_layout
+from pathlib import Path
 from auth import get_authenticator, get_authentication_status
-import streamlit_authenticator as stauth
-from dateutil.relativedelta import relativedelta
 
 
 st.set_page_config(page_title="Finance dashboard", page_icon="🦈", layout="wide")
@@ -23,7 +21,7 @@ if get_authentication_status(authenticator):
         uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type="xlsx")
         if uploaded_file is not None:
             uploaded_df = pd.read_excel(uploaded_file)
-            uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}", index=False)
+            uploaded_df.to_excel(Path('DataForFinanceDashboard', 'raw', uploaded_file.name), index=False)
     else:
         filterchooser, fuploader3 = st.columns([2, 1])
         with filterchooser:
@@ -33,7 +31,7 @@ if get_authentication_status(authenticator):
             uploaded_file = st.file_uploader("Töltsd fel a tranzakciótörténetet:", type="xlsx")
             if uploaded_file is not None:
                 uploaded_df = pd.read_excel(uploaded_file)
-                uploaded_df.to_excel(f"DataForFinanceDashboard/raw/{uploaded_file.name}", index=False)
+                uploaded_df.to_excel(Path('DataForFinanceDashboard', 'raw', uploaded_file.name), index=False)
 
         income_and_spendings = dc.calculate_savings_and_spendings(actual_filtered_df)
         categories_income_and_spendings_with_date = dc.calculate_spendings_by_categories(

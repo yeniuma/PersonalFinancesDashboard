@@ -2,7 +2,7 @@ import pandas as pd
 import glob
 import os
 import numpy as np
-from datetime import datetime
+from pathlib import Path
 from pandas.api.types import (
     is_categorical_dtype,
     is_datetime64_any_dtype,
@@ -84,7 +84,7 @@ def _save_excel(df, path):
 
 def get_data():
     try:
-        path = "DataForFinanceDashboard\clean\clean_df.xlsx"
+        path = Path("DataForFinanceDashboard", "clean", "clean_df.xlsx")
         df = pd.read_excel(path)
     except FileNotFoundError:
         df = pd.DataFrame()
